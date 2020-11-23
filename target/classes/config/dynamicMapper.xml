@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="dynamicMapper">
+
+   <insert id="insert" parameterType="productListDTO">
+      insert into productlist values (#{code} ,#{name},#{qty},#{price},#{price})
+   </insert>
+   
+   <!-- 검색필드 field 검색단어 keyword 정렬 order -->
+   <select id="dynamicSelect" parameterType="list" resultType="productListDTO">
+     select * from productList
+     <where>
+       <if test="field!=null">
+			${field} like '%'||#{keyword}||'%'
+	   </if>
+     </where>
+      <if test="order!=null">
+			order by ${order}
+	   </if> 
+   </select>
+	
+  <update id="update" parameterType="productListDTO">
+     update productlist
+     <set>
+       <if test="name!=null">
+         name = #{name},
+       </if>
+       <if test="qty>0">
+         qty = #{qty},
+       </if>
+       <if test="price>0">
+         price = #{price},
+       </if>
+       <if test="detail!=null">
+         detail=#{detail},
+       </if>
+     </set>
+     where code = #{code}
+  </update> 
+ 
+  <delete id="delete" parameterType="string">
+    delete from productList where code = #{_parameter}
+  </delete>
+ 
+  <select id="selectSum" resultType="int">
+     select sum(qty) from productlist 
+  </select>
+  
+  <select id="selectCode" parameterType="list" resultType="productListDTO">
+    select * from productList
+    <where>
+      code in
+      <foreach collection="list" item="item" separator="," open="(" close=")">
+	      #{item}
+	    </foreach>
+    </where>
+  </select>
+  
+ 
+</mapper>
+
+<!-- code name qty price detail -->
